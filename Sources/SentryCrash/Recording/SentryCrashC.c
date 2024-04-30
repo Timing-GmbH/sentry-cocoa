@@ -47,6 +47,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Used by our relaunch mechanism
+#include <libproc.h>
+#include <unistd.h>
+
 // ============================================================================
 #pragma mark - Globals -
 // ============================================================================
@@ -59,6 +63,10 @@ static char g_lastCrashReportFilePath[SentryCrashFU_MAX_PATH_LENGTH];
 static void (*g_saveScreenShot)(const char *) = 0;
 static void (*g_saveViewHierarchy)(const char *) = 0;
 static void (*g_saveTransaction)(void) = 0;
+
+static bool _relaunchCommandAvailable = false;
+static char _relaunchCommand[1024];
+
 // ============================================================================
 #pragma mark - Utility -
 // ============================================================================
@@ -86,6 +94,10 @@ onCrash(struct SentryCrash_MonitorContext *monitorContext)
         sentrycrashreport_writeStandardReport(monitorContext, crashReportFilePath);
         sentrySessionReplaySync_writeInfo();
     }
+
+	if (_relaunchCommandAvailable) {
+		system(_relaunchCommand);
+	}
 
     // Report is saved to disk, now we try to take screenshots
     // and view hierarchies, and try to save any ongoing transaction
@@ -141,6 +153,13 @@ sentrycrash_install(const char *appName, const char *const installPath)
     sentrycrashstate_initialize(path);
 
     sentrycrashccd_init(60);
+
+	char appBinaryPath[PROC_PIDPATHINFO_MAXSIZE];
+	if (proc_pidpath(getpid(), appBinaryPath, sizeof(appBinaryPath)) > 0
+		&& strnstr(appBinaryPath, "TimingHelper", sizeof(appBinaryPath)) != NULL) {
+		snprintf(_relaunchCommand, sizeof(_relaunchCommand), "'%s' --fromCrashRecovery &", appBinaryPath);
+		_relaunchCommandAvailable = true;
+	}
 
     sentrycrashcm_setEventCallback(onCrash);
     SentryCrashMonitorType monitors = sentrycrash_setMonitoring(g_monitoring);
