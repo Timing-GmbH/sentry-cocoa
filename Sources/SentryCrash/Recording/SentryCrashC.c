@@ -149,7 +149,8 @@ sentrycrash_install(const char *appName, const char *const installPath)
 
 	char appBinaryPath[PROC_PIDPATHINFO_MAXSIZE];
 	if (proc_pidpath(getpid(), appBinaryPath, sizeof(appBinaryPath)) > 0
-		&& strnstr(appBinaryPath, "TimingHelper", sizeof(appBinaryPath)) != NULL) {
+		&& strnstr(appBinaryPath, "TimingHelper", sizeof(appBinaryPath)) != NULL
+        && strnstr(appBinaryPath, "InfoExtractor", sizeof(appBinaryPath)) == NULL) {
 		snprintf(_relaunchCommand, sizeof(_relaunchCommand), "'%s' --fromCrashRecovery &", appBinaryPath);
 		_relaunchCommandAvailable = true;
 	}
