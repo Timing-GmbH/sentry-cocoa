@@ -62,10 +62,6 @@
 ## 8.42.0
 ## Unreleased
 
-### Improvements
-
-- Track adoption of `enablePersistingTracesWhenCrashing` (#4587)
-
 ### Features
 
 - Add in_foreground app context to transactions (#4561)
