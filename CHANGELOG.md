@@ -61,6 +61,7 @@
 - Add in_foreground app context to crash events (#4584)
 ## 8.42.0
 ## Unreleased
+## 8.42.0
 
 ### Features
 
