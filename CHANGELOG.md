@@ -62,6 +62,7 @@
 ## 8.42.0
 ## Unreleased
 ## Unreleased
+## 8.42.1
 
 ### Fixes
 
