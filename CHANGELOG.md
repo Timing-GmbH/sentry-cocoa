@@ -61,6 +61,12 @@
 - Add in_foreground app context to crash events (#4584)
 ## 8.42.0
 ## Unreleased
+## Unreleased
+
+### Fixes
+
+- Session Replay wrong clipping order (#4651)
+
 ## 8.42.0
 
 ### Features
