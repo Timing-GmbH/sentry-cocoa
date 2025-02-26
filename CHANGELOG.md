@@ -83,7 +83,6 @@
 - Use `options.reportAccessibilityIdentifier` for Breadcrumbs and UIEvents (#4569) 
 - Session replay transformed view masking (#4529)
 - Load integration from same binary (#4541)
-- Masking for fast animations #4574
 - Masking for fast animations (#4574)
 - Fix GraphQL context for HTTP client error tracking (#4567)
 

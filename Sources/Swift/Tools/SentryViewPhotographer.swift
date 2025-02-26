@@ -77,32 +77,39 @@ class SentryViewPhotographer: NSObject, SentryViewScreenshotProvider {
                 let path = CGPath(rect: rect, transform: &transform)
                 
                 defer { latestRegion = region }
-                
-                switch region.type {
-                case .redact, .redactSwiftUI:
-                    // This early return is to avoid masking the same exact area in row,
-                    // something that is very common in SwiftUI and can impact performance.
-                    guard latestRegion?.canReplace(as: region) != true && imageRect.intersects(path.boundingBoxOfPath) else { continue }
-                    (region.color ?? UIImageHelper.averageColor(of: context.currentImage, at: rect.applying(region.transform))).setFill()
-                    context.cgContext.addPath(path)
-                    context.cgContext.fillPath()
-                case .clipOut:
-                    clipOutPath.addPath(path)
-                    self.updateClipping(for: context.cgContext,
-                                        clipPaths: clipPaths,
-                                        clipOutPath: clipOutPath)
-                case .clipBegin:
-                    clipPaths.append(path)
-                    self.updateClipping(for: context.cgContext,
-                                        clipPaths: clipPaths,
-                                        clipOutPath: clipOutPath)
-                case .clipEnd:
-                    if !clipPaths.isEmpty {
-                        clipPaths.removeLast()
+
+                var latestRegion: RedactRegion?
+                for region in redact {
+                    let rect = CGRect(origin: CGPoint.zero, size: region.size)
+                    var transform = region.transform
+                    let path = CGPath(rect: rect, transform: &transform)
+                    
+                    defer { latestRegion = region }
+                          
+                    switch region.type {
+                    case .redact, .redactSwiftUI:
+                        guard latestRegion?.canReplace(as: region) != true && imageRect.intersects(path.boundingBoxOfPath) else { continue }
+                        (region.color ?? UIImageHelper.averageColor(of: context.currentImage, at: rect.applying(region.transform))).setFill()
+                        context.cgContext.addPath(path)
+                        context.cgContext.fillPath()
+                    case .clipOut:
+                        clipOutPath.addPath(path)
+                        self.updateClipping(for: context.cgContext,
+                                            clipPaths: clipPaths,
+                                            clipOutPath: clipOutPath)
+                    case .clipBegin:
+                        clipPaths.append(path)
+                        self.updateClipping(for: context.cgContext,
+                                            clipPaths: clipPaths,
+                                            clipOutPath: clipOutPath)
+                    case .clipEnd:
+                        if !clipPaths.isEmpty {
+                            clipPaths.removeLast()
+                        }
+                        self.updateClipping(for: context.cgContext,
+                                            clipPaths: clipPaths,
+                                            clipOutPath: clipOutPath)
                     }
-                    self.updateClipping(for: context.cgContext,
-                                        clipPaths: clipPaths,
-                                        clipOutPath: clipOutPath)
                 }
             }
         }
