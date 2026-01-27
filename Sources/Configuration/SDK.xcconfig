@@ -1,6 +1,6 @@
 #include "DeploymentTargets.xcconfig"
 
-SUPPORTED_PLATFORMS = macosx iphoneos iphonesimulator watchos watchsimulator appletvos appletvsimulator xros xrsimulator
+SUPPORTED_PLATFORMS = macosx
 TARGETED_DEVICE_FAMILY = 1,2,3,4,7
 SKIP_INSTALL = YES
 DEFINES_MODULE = YES
@@ -35,7 +35,7 @@ COPY_PHASE_STRIP = $(COPY_PHASE_STRIP_$(CONFIGURATION))
 
 OTHER_LDFLAGS[sdk=watch*] = $(inherited) -framework WatchKit
 
-SUPPORTS_MACCATALYST = YES
+SUPPORTS_MACCATALYST = NO
 
 CLANG_CXX_LANGUAGE_STANDARD = c++14
 CLANG_CXX_LIBRARY = libc++
